@@ -13,7 +13,7 @@ Follow these simple steps to get your **Voice Support Copilot** up and running.
 
 First, clone the repository:
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/Aditya11-11/Agentic_cons_demo
 cd Case_Study
 ```
 
