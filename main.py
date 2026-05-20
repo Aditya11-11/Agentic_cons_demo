@@ -10,6 +10,9 @@ from engine_arc.voice_engine import VoiceEngine
 from engine_arc.rag_engine import RAGEngine
 from prompt.prompt import SYSTEM_PROMPT
 
+# Set the path to the directory containing support documents
+KNOWLEDGE_BASE_DIR = "knowledgebase"
+
 class SupportCopilot:
 
     def __init__(self):
@@ -62,10 +65,15 @@ async def main():
     """
     copilot = SupportCopilot()
     
-    pdf_path = "/home/aditya/nltk_data/Case_Study/Case Study - AI Consultant.pdf"
-    if os.path.exists(pdf_path):
-        copilot.rag.add_document(pdf_path)
-        print(f"Successfully loaded {os.path.basename(pdf_path)} into knowledge memory.")
+    # We load our knowledge base from the specified directory.
+    if os.path.exists(KNOWLEDGE_BASE_DIR):
+        files = [f for f in os.listdir(KNOWLEDGE_BASE_DIR) if f.endswith(('.pdf', '.txt'))]
+        for f in files:
+            file_path = os.path.join(KNOWLEDGE_BASE_DIR, f)
+            copilot.rag.add_document(file_path)
+            print(f"Successfully loaded '{f}' into knowledge memory.")
+    else:
+        print(f"Warning: Knowledge base directory '{KNOWLEDGE_BASE_DIR}' not found.")
 
     print("Welcome to Voice Support Copilot.")
     print("Commands: 'v' for voice, 'exit' to end, or just type your question.")

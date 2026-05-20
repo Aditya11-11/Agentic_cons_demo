@@ -12,15 +12,14 @@ Follow these simple steps to get your **Voice Support Copilot** up and running.
 ## 1. Installation
 
 First, clone the repository:
-```bash
 git clone https://github.com/Aditya11-11/Agentic_cons_demo
 cd Case_Study
 ```
+### Add Knowledge
+Simply place your PDFs or text files into the `knowledgebase/` directory. The assistant will automatically read all files in that folder on startup.
 
 ### Option A: Using Docker (Recommended)
 Building the container ensures all audio and AI dependencies are correctly configured.
-
-```bash
 # Build the image
 docker build -t support-copilot .
 

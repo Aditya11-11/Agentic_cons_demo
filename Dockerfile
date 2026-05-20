@@ -22,6 +22,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
+# Ensure the knowledge base directory exists
+RUN mkdir -p knowledgebase
+
 ENV VOSK_MODEL_PATH=/opt/vosk-model-en
 ENV PYTHONUNBUFFERED=1
 
