@@ -1,0 +1,11 @@
+transformers
+torch
+accelerate
+edge-tts
+vosk
+chromadb
+pypdf
+sentence-transformers
+pydantic
+python-dotenv
+pyaudio
