@@ -2,43 +2,43 @@
 This module manages the core AI brain of our support assistant.
 It uses the Qwen3 model to handle conversations and generate structured summaries.
 """
-import torch
-from transformers import pipeline
+import os
+from huggingface_hub import InferenceClient
 from prompt.prompt import SUMMARY_PROMPT
 
 class LLMEngine:
     """
     The orchestrator for our Large Language Model (LLM) interactions.
-    It's responsible for loading the model and managing the chat pipeline.
+    Now uses the Hugging Face Inference API for blazing-fast serverless generation.
     """
     def __init__(self):
         """
-        Sets up the text generation pipeline, choosing between GPU or CPU 
-        based on what's available on the system.
+        Initializes the InferenceClient using the HF_TOKEN from environment variables.
         """
-        self.model_id = "Qwen/Qwen3-1.7B"
-        self.pipe = pipeline(
-            "text-generation", 
-            model=self.model_id, 
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"
-        )
+        self.hf_token = os.environ.get("HF_TOKEN")
+        self.model_id = "Qwen/Qwen2.5-7B-Instruct"
+        self.client = InferenceClient(model=self.model_id, token=self.hf_token)
 
     def generate_response(self, messages, max_new_tokens=512):
         """
-        Takes a list of past messages and generates the next logical reply 
-        from the AI's perspective.
+        Sends the conversation history to HF servers and returns the response.
         """
-        outputs = self.pipe(messages, max_new_tokens=max_new_tokens)
-        return outputs[0]["generated_text"][-1]["content"]
+        try:
+            completion = self.client.chat.completions.create(
+                messages=messages,
+                max_tokens=max_new_tokens,
+                temperature=0.7,
+            )
+            return completion.choices[0].message.content
+        except Exception as e:
+            return f"LLM Error: {str(e)}"
 
     def generate_support_summary(self, conversation_history):
         """
-        Look back at everything discussed and boil it down into a 
-        clean, structured support ticket for the team.
+        Creates a structured support ticket by summarizing the conversation.
         """
-        summary_prompt = [
+        summary_messages = [
             {"role": "system", "content": SUMMARY_PROMPT},
-            {"role": "user", "content": conversation_history}
+            {"role": "user", "content": f"Please summarize this conversation into a support ticket:\n\n{conversation_history}"}
         ]
-        return self.generate_response(summary_prompt)
+        return self.generate_response(summary_messages)

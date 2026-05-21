@@ -1,3 +1,13 @@
+---
+title: Voice Support Copilot
+emoji: 🎧
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # Voice Support Copilot
 
 An AI-powered support assistant that listens, thinks, and speaks.

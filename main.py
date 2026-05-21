@@ -44,9 +44,25 @@ class SupportCopilot:
         self.history.append({"role": "user", "content": augmented_input})
 
         response = self.llm.generate_response(self.history)
+        
+        # Clean response for TTS (remove reasoning tags and emojis)
+        import re
+        # 1. Remove <think> tags content
+        clean_text = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)
+        # 2. Remove "Think." or "Thinking:" prefixes at the start
+        clean_text = re.sub(r'^Think\..*?(?=Sure|Hello|Hi|Please|Could|I |Yes)', '', clean_text, flags=re.DOTALL | re.IGNORECASE)
+        # 3. Final catch for any text before a closing "Think." if it exists
+        clean_text = re.sub(r'.*?Think\.', '', clean_text, flags=re.DOTALL | re.IGNORECASE) if "Think." in clean_text else clean_text
+        
+        # 4. Strip Emoji/Special Characters (to avoid TTS reading them out)
+        # This removes most emojis and non-standard characters
+        clean_text = clean_text.encode('ascii', 'ignore').decode('ascii').strip()
+        
         self.history.append({"role": "assistant", "content": response})
         print(f"AI: {response}")
-        audio_file = await self.voice.text_to_speech(response)
+        
+        # Generate audio from the CLEANED response
+        audio_file = await self.voice.text_to_speech(clean_text)
         print(f"Response saved to {audio_file}")
         
         return response, audio_file

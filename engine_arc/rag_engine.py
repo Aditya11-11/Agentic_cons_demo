@@ -13,7 +13,7 @@ class RAGEngine:
     Handles document ingestion and information retrieval using 
     semantic search via ChromaDB.
     """
-    def __init__(self, persist_directory="./chroma_db"):
+    def __init__(self, persist_directory="/data/chroma_db"):
         """
         Connects to the local database and sets up the embedding model 
         that converts text into searchable numbers.

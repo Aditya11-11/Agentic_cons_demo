@@ -1,6 +1,6 @@
 transformers
 torch
-accelerate
+huggingface-hub
 edge-tts
 vosk
 chromadb
@@ -8,4 +8,5 @@ pypdf
 sentence-transformers
 pydantic
 python-dotenv
-pyaudio
+gradio
+pydub

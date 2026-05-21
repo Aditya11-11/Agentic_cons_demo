@@ -35,3 +35,6 @@ test.py
 t2.py
 
 .env
+DOC/
+app.py
+    

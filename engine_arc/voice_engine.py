@@ -7,6 +7,7 @@ import vosk
 import os
 import json
 import wave
+from pydub import AudioSegment
 
 class VoiceEngine:
     def __init__(self, model_path="/opt/vosk-model-en", voice="en-IN-NeerjaNeural"):
@@ -30,27 +31,41 @@ class VoiceEngine:
 
     def speech_to_text(self, audio_path):
         """
-        Analyzes a pre-recorded WAV file and extracts the spoken text.
+        Analyzes a pre-recorded audio file and extracts the spoken text.
+        It converts the input to the required WAV format if necessary.
         """
         if not self.stt_model:
             return "STT model not loaded."
             
-        wf = wave.open(audio_path, "rb")
-        if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
-            print("Audio file must be WAV format mono PCM.")
-            return None
 
-        rec = vosk.KaldiRecognizer(self.stt_model, wf.getframerate())
-        results = []
-        while True:
-            data = wf.readframes(4000)
-            if len(data) == 0:
-                break
-            if rec.AcceptWaveform(data):
-                results.append(json.loads(rec.Result())["text"])
         
-        results.append(json.loads(rec.FinalResult())["text"])
-        return " ".join([r for r in results if r])
+        try:
+            audio = AudioSegment.from_file(audio_path)
+            audio = audio.set_frame_rate(16000).set_channels(1).set_sample_width(2)
+            temp_wav = "temp_stt.wav"
+            audio.export(temp_wav, format="wav")
+            
+            wf = wave.open(temp_wav, "rb")
+            rec = vosk.KaldiRecognizer(self.stt_model, wf.getframerate())
+            results = []
+            while True:
+                data = wf.readframes(4000)
+                if len(data) == 0:
+                    break
+                if rec.AcceptWaveform(data):
+                    results.append(json.loads(rec.Result())["text"])
+            
+            results.append(json.loads(rec.FinalResult())["text"])
+            
+            # Cleanup
+            wf.close()
+            if os.path.exists(temp_wav):
+                os.remove(temp_wav)
+                
+            return " ".join([r for r in results if r])
+        except Exception as e:
+            print(f"Error processing audio: {e}")
+            return None
 
     def live_listen(self, prompt="Listening..."):
         """
