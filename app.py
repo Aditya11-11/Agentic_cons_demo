@@ -60,6 +60,13 @@ def respond(user_input: str) -> str:
     if intent == "ticket_request":
         return ticket_flow.start()
 
+    if intent == "greeting":
+        return (
+            "Hi there! Thanks for calling TechFlow Support. 😊 "
+            "My name is Alex, and I'm here to help you today. "
+            "What can I assist you with?"
+        )
+
     # RAG retrieval with query expansion
     context = retrieve_with_expansion(user_input, rag.collection, llm)
 
