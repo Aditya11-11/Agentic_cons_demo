@@ -90,11 +90,12 @@ class TicketFlowManager:
         """Use LLM to clean/normalize specific short fields, detecting placeholders."""
         prompt = (
             f"The user was asked for their {field}. They responded with: '{raw}'.\n"
+            f"GOAL: Extract the clean {field} value.\n"
             f"Rules:\n"
-            f"1. If they provided the {field}, return ONLY the clean value (e.g., 'Aditya' or 'test@example.com').\n"
-            f"2. If they only said something like 'sure', 'yes', 'ok', or 'go ahead' without providing the string, return 'AFFIRMATIVE_ONLY'.\n"
-            f"3. If the response is nonsense or empty relative to the {field}, return 'MISSING'.\n"
-            f"Return ONLY one of the results above. No preamble."
+            f"1. If they provided a name or email (even in a sentence like 'i am aditya' or 'reach me at test@email.com'), return ONLY the clean value.\n"
+            f"2. If they only said 'yes', 'sure', 'ok', etc., without ANY name or email data, return 'AFFIRMATIVE_ONLY'.\n"
+            f"3. Otherwise, if it's completely irrelevant, return 'MISSING'.\n"
+            f"Return ONLY the value. No preamble."
         )
         return self.llm.generate(prompt, max_new_tokens=40).strip()
 
