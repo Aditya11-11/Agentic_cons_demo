@@ -49,7 +49,25 @@ def respond(user_input: str) -> str:
     if ticket_flow.active:
         response, done = ticket_flow.next(user_input)
         if done:
+            import json
+            # Enrich ticket with LLM context summarization
+            history = context_manager.get_history_string()
+            try:
+                summary_json_str = llm.generate_support_summary(history)
+                clean_json = re.sub(r'```json\n|\n```|```', '', summary_json_str).strip()
+                summary_data = json.loads(clean_json)
+                ticket_flow.ticket.subject = summary_data.get("subject", "")
+                ticket_flow.ticket.category = summary_data.get("category", "")
+                ticket_flow.ticket.steps_to_reproduce = summary_data.get("steps_to_reproduce", "")
+                ticket_flow.ticket.expected_behavior = summary_data.get("expected_behavior", "")
+                ticket_flow.ticket.actual_behavior = summary_data.get("actual_behavior", "")
+                ticket_flow.ticket.conversation_summary = summary_data.get("conversation_summary", "")
+                ticket_flow.ticket.tags = summary_data.get("tags", [])
+            except Exception as e:
+                print(f"Ticket enrichment failed: {e}")
+            
             active_ticket = ticket_flow.ticket
+            
         context_manager.add("user", user_input)
         context_manager.add("assistant", response)
         return response

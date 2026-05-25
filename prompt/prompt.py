@@ -57,9 +57,13 @@ Return a JSON object with these fields:
 - subject: One sentence describing the issue
 - description: 2–3 sentence summary of the problem
 - category: One of [billing, technical, account, product, general]
-- priority: One of [low, medium, high, critical] — infer from urgency in conversation
+- priority: One of [low, medium, high, critical]
 - tags: List of 2–4 relevant keywords
-- resolution_notes: What was resolved or what next step was suggested (if any)
+- steps_to_reproduce: Bullet points or "None mentioned"
+- expected_behavior: What the user expected
+- actual_behavior: What happened instead
+- resolution_notes: What was resolved or suggested
+- conversation_summary: A 3-4 sentence summary of the full interaction
 
 Return ONLY valid JSON. No markdown, no preamble.
 """
