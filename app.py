@@ -74,7 +74,7 @@ def respond(user_input: str) -> str:
         ticket_offered = False
         if not context_manager.messages:
             return (
-                "Hi there! Thanks for calling PayGate Pro Support. 😊 "
+                "Hi there! Thanks for calling PayGate Pro Support. "
                 "My name is Neha, and I'm here to help you today. "
                 "What can I assist you with?"
             )
