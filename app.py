@@ -144,7 +144,7 @@ def generate_ticket():
 
 
 # ─── Gradio UI ────────────────────────────────────────────────────────
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
+with gr.Blocks() as demo:
     gr.Markdown("# 🎧 Voice Support Copilot")
     gr.Markdown("Speak or type to **Alex**, your AI support assistant. Powered by TechFlow knowledge base.")
 
@@ -162,7 +162,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             status_msg = gr.Markdown("")
 
         with gr.Column(scale=2):
-            chatbot = gr.Chatbot(label="Conversation", type="messages")
+            chatbot = gr.Chatbot(label="Conversation")
             audio_output = gr.Audio(label="AI Voice Response", autoplay=True)
 
     with gr.Row():
@@ -196,4 +196,4 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(server_name="0.0.0.0", server_port=7860, theme=gr.themes.Soft())
