@@ -69,13 +69,17 @@ def respond(user_input: str) -> str:
         ticket_offered = False
         return ticket_flow.start()
 
+    # Only use the hardcoded telephonic intro if it's the very first interaction
     if intent == "greeting":
         ticket_offered = False
-        return (
-            "Hi there! Thanks for calling TechFlow Support. 😊 "
-            "My name is Alex, and I'm here to help you today. "
-            "What can I assist you with?"
-        )
+        if not context_manager.history:
+            return (
+                "Hi there! Thanks for calling TechFlow Support. 😊 "
+                "My name is Alex, and I'm here to help you today. "
+                "What can I assist you with?"
+            )
+        else:
+            return "Hi there! How can I help you further?"
 
     # RAG retrieval with query expansion
     context = retrieve_with_expansion(user_input, rag.collection, llm)
