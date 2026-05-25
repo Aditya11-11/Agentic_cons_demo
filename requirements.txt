@@ -1,12 +1,25 @@
-transformers
-torch
-huggingface-hub
-edge-tts
-vosk
-chromadb
-pypdf
-sentence-transformers
-pydantic
-python-dotenv
+# Core LLM
+transformers>=4.40.0
+torch>=2.0.0
+accelerate>=0.28.0
+huggingface_hub
+
+# Voice
+vosk>=0.3.45
+edge-tts>=6.1.9
+sounddevice>=0.4.6
+numpy>=1.24.0
+pyaudio
+
+# RAG
+chromadb>=0.5.0
+sentence-transformers>=2.7.0
+pypdf>=3.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+rich>=13.0.0
+typer>=0.12.0
+pydantic>=2.0.0
 gradio
 pydub

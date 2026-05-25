@@ -25,6 +25,8 @@ wheels/
 
 # Project Specific
 chroma_db/
+chroma_store/
+tickets/
 *.mp3
 *.wav
 
@@ -35,6 +37,5 @@ test.py
 t2.py
 
 .env
-DOC/
 app.py
     

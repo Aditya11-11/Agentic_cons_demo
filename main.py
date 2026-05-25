@@ -1,123 +1,169 @@
 """
-Voice Support Copilot - Main Application
-This script brings together the LLM, Voice, and RAG engines to create 
-a helpful support assistant that can listen, think, and speak.
+Voice Support Copilot - Main Application (Improved)
+Integrates LLM, Voice, RAG engines with intent classification,
+conversational ticket creation, and context window management.
 """
 import asyncio
 import os
-from engine_arc.llm_engine import LLMEngine
+import re
+from engine_arc.llm_engine import LLMEngine, ContextWindowManager
 from engine_arc.voice_engine import VoiceEngine
-from engine_arc.rag_engine import RAGEngine
-from prompt.prompt import SYSTEM_PROMPT
+from engine_arc.rag_engine import RAGEngine, retrieve_with_expansion
+from engine_arc.ticket_flow import TicketFlowManager
+from prompt.prompt import SYSTEM_PROMPT, INTENT_CLASSIFIER_PROMPT, TICKET_SUMMARY_PROMPT
+from config import Config
 
-# Set the path to the directory containing support documents
-KNOWLEDGE_BASE_DIR = "knowledgebase"
 
 class SupportCopilot:
+    """
+    Main orchestrator that ties together voice, LLM, RAG, ticketing,
+    and context management into a coherent support experience.
+    """
 
     def __init__(self):
-        """
-        Sets up each functional unit and prepares the initial system persona.
-        """
         self.llm = LLMEngine()
-        self.voice = VoiceEngine(model_path="/opt/vosk-model-en", voice="en-IN-NeerjaNeural")
+        self.voice = VoiceEngine(
+            model_path=Config.VOSK_MODEL_PATH,
+            voice=Config.TTS_VOICE
+        )
         self.rag = RAGEngine()
-        self.history = [
-            {"role": "system", "content": SYSTEM_PROMPT}
+        self.context_manager = ContextWindowManager(self.llm)
+        self.ticket_flow = TicketFlowManager(self.llm)
+        self.active_ticket = None
+
+    def classify_intent(self, user_input: str) -> str:
+        """Use the LLM to classify the user's intent."""
+        prompt = INTENT_CLASSIFIER_PROMPT.format(message=user_input)
+        return self.llm.generate(prompt, max_new_tokens=10).strip().lower()
+
+    def respond(self, user_input: str) -> str:
+        """
+        Core response logic. Handles ticket flow, intent classification,
+        RAG retrieval, and LLM generation with context management.
+        """
+        # If we're mid-ticket-creation, continue that flow
+        if self.ticket_flow.active:
+            response, done = self.ticket_flow.next(user_input)
+            if done:
+                self.active_ticket = self.ticket_flow.ticket
+            self.context_manager.add("user", user_input)
+            self.context_manager.add("assistant", response)
+            return response
+
+        # Classify intent
+        intent = self.classify_intent(user_input)
+
+        if intent == "ticket_request":
+            return self.ticket_flow.start()
+
+        # Retrieve RAG context (with query expansion)
+        context = retrieve_with_expansion(
+            user_input, self.rag.collection, self.llm
+        )
+
+        # Build prompt with history + context
+        history = self.context_manager.get_history_string()
+        system_prompt = SYSTEM_PROMPT.format(context=context, history=history)
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input}
         ]
+        response = self.llm.generate_response(messages)
 
-    async def handle_interaction(self, user_input, audio_input=None):
+        # Update memory
+        self.context_manager.add("user", user_input)
+        self.context_manager.add("assistant", response)
+
+        return response
+
+    def _clean_for_tts(self, text: str) -> str:
+        """Clean response text for TTS output."""
+        # Remove <think> tags content
+        clean = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+        # Strip non-ASCII (emojis etc.)
+        clean = clean.encode('ascii', 'ignore').decode('ascii').strip()
+        return clean
+
+    async def handle_interaction(self, user_input: str):
         """
-        Handles a single turn of conversation, whether it's via voice or text.
-        It finds relevant documents, asks the AI for a reply, and then speaks the answer.
+        Handles a single turn: generates a response, prints it,
+        and optionally speaks it via TTS.
         """
-        if audio_input:
-            text = self.voice.speech_to_text(audio_input)
-            print(f"User (Voice): {text}")
+        response = self.respond(user_input)
+        print(f"Alex: {response}\n")
+
+        # Generate audio from cleaned response
+        clean_text = self._clean_for_tts(response)
+        if clean_text:
+            audio_file = await self.voice.text_to_speech(clean_text)
+            print(f"  [Audio saved to {audio_file}]")
+
+        return response
+
+    def _on_exit(self):
+        """Generate or display the final support ticket on exit."""
+        if self.active_ticket:
+            print("\n--- Your Support Ticket ---")
+            print(self.active_ticket.to_markdown())
         else:
-            text = user_input
-            print(f"User: {text}")
+            # Auto-generate ticket from conversation history
+            history = self.context_manager.get_history_string()
+            if history:
+                prompt = TICKET_SUMMARY_PROMPT.format(conversation=history)
+                raw_json = self.llm.generate(prompt, max_new_tokens=400)
+                print("\n--- Auto-Generated Ticket Summary ---")
+                print(raw_json)
+            else:
+                print("\nNo conversation to summarize. Goodbye!")
 
-        context = self.rag.query(text)
-        
-        augmented_input = f"Context:\n{context}\n\nUser Question: {text}"
-        self.history.append({"role": "user", "content": augmented_input})
-
-        response = self.llm.generate_response(self.history)
-        
-        # Clean response for TTS (remove reasoning tags and emojis)
-        import re
-        # 1. Remove <think> tags content
-        clean_text = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)
-        # 2. Remove "Think." or "Thinking:" prefixes at the start
-        clean_text = re.sub(r'^Think\..*?(?=Sure|Hello|Hi|Please|Could|I |Yes)', '', clean_text, flags=re.DOTALL | re.IGNORECASE)
-        # 3. Final catch for any text before a closing "Think." if it exists
-        clean_text = re.sub(r'.*?Think\.', '', clean_text, flags=re.DOTALL | re.IGNORECASE) if "Think." in clean_text else clean_text
-        
-        # 4. Strip Emoji/Special Characters (to avoid TTS reading them out)
-        # This removes most emojis and non-standard characters
-        clean_text = clean_text.encode('ascii', 'ignore').decode('ascii').strip()
-        
-        self.history.append({"role": "assistant", "content": response})
-        print(f"AI: {response}")
-        
-        # Generate audio from the CLEANED response
-        audio_file = await self.voice.text_to_speech(clean_text)
-        print(f"Response saved to {audio_file}")
-        
-        return response, audio_file
-
-    def generate_ticket(self):
-        """
-        Analyzes the full conversation and creates a brief support ticket summary.
-        """
-        conv_str = "\n".join([f"{m['role']}: {m['content']}" for m in self.history if m['role'] != 'system'])
-        ticket = self.llm.generate_support_summary(conv_str)
-        return ticket
 
 async def main():
-    """
-    The main app loop. It handles document loading and the interaction menu.
-    """
+    """The main app loop. Handles document loading and the interaction menu."""
     copilot = SupportCopilot()
-    
-    # We load our knowledge base from the specified directory.
-    if os.path.exists(KNOWLEDGE_BASE_DIR):
-        files = [f for f in os.listdir(KNOWLEDGE_BASE_DIR) if f.endswith(('.pdf', '.txt'))]
-        for f in files:
-            file_path = os.path.join(KNOWLEDGE_BASE_DIR, f)
-            copilot.rag.add_document(file_path)
-            print(f"Successfully loaded '{f}' into knowledge memory.")
-    else:
-        print(f"Warning: Knowledge base directory '{KNOWLEDGE_BASE_DIR}' not found.")
 
-    print("Welcome to Voice Support Copilot.")
-    print("Commands: 'v' for voice, 'exit' to end, or just type your question.")
-    
+    # Load knowledge base
+    kb_dir = Config.KNOWLEDGEBASE_DIR
+    if os.path.exists(kb_dir):
+        files = [f for f in os.listdir(kb_dir) if f.endswith(('.pdf', '.txt'))]
+        for f in files:
+            file_path = os.path.join(kb_dir, f)
+            copilot.rag.add_document(file_path)
+            print(f"  Loaded '{f}' into knowledge memory.")
+    else:
+        print(f"  Warning: Knowledge base directory '{kb_dir}' not found.")
+
+    # Ensure ticket output directory exists
+    os.makedirs(Config.TICKET_OUTPUT_DIR, exist_ok=True)
+
+    print("\n" + "=" * 60)
+    print("  Alex: Hi! I'm Alex, your support assistant.")
+    print("  How can I help you today?")
+    print("=" * 60)
+    print("Commands: type your question | 'v' = voice | 'ticket' = log issue | 'exit' = quit\n")
+
     while True:
-        user_input = input("\n[Text / 'v' for voice / 'exit'] > ").strip()
-        
-        if user_input.lower() == 'exit':
+        user_input = input("You: ").strip()
+
+        if not user_input:
+            continue
+        if user_input.lower() == "exit":
+            copilot._on_exit()
             break
-        
-        if user_input.lower() == 'v':
-            # This triggers the live microphone mode.
+        if user_input.lower() == "v":
             text = copilot.voice.live_listen("I am listening... go ahead!")
             if text:
-                print(f"I heard: {text}")
+                print(f"You (voice): {text}")
                 await copilot.handle_interaction(text)
             else:
                 print("I couldn't catch that. Could you try again?")
-        else:
-            # Standard text interaction.
-            if user_input:
-                await copilot.handle_interaction(user_input)
+            continue
+        if user_input.lower() == "ticket":
+            user_input = "I want to log a support ticket"
 
-    print("\nWrapping up... generating your support ticket now.")
-    ticket = copilot.generate_ticket()
-    print("SUPPORT Ticket")
-    print(ticket)
+        await copilot.handle_interaction(user_input)
+
 
 if __name__ == "__main__":
-    # Start the event loop and launch the app.
     asyncio.run(main())
+
