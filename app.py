@@ -22,6 +22,7 @@ rag = RAGEngine(persist_directory=CHROMA_DIR)
 context_manager = ContextWindowManager(llm)
 ticket_flow = TicketFlowManager(llm)
 active_ticket = None
+ticket_offered = False  # Tracks if Alex suggested logging a ticket last turn
 
 
 def load_kb():
@@ -42,7 +43,7 @@ load_kb()
 
 def respond(user_input: str) -> str:
     """Core response logic matching main.py's SupportCopilot.respond()."""
-    global active_ticket
+    global active_ticket, ticket_offered
 
     # If mid-ticket flow, continue
     if ticket_flow.active:
@@ -53,14 +54,23 @@ def respond(user_input: str) -> str:
         context_manager.add("assistant", response)
         return response
 
+    # If Alex offered a ticket last turn and user agreed, start the flow
+    _affirmatives = {"sure", "yes", "ok", "okay", "please", "go ahead", "yeah",
+                     "yep", "yup", "absolutely", "of course", "do it", "proceed"}
+    if ticket_offered and any(a in user_input.lower() for a in _affirmatives):
+        ticket_offered = False
+        return ticket_flow.start()
+
     # Classify intent
     intent_prompt = INTENT_CLASSIFIER_PROMPT.format(message=user_input)
     intent = llm.generate(intent_prompt, max_new_tokens=10).strip().lower()
 
     if intent == "ticket_request":
+        ticket_offered = False
         return ticket_flow.start()
 
     if intent == "greeting":
+        ticket_offered = False
         return (
             "Hi there! Thanks for calling TechFlow Support. 😊 "
             "My name is Alex, and I'm here to help you today. "
@@ -79,6 +89,12 @@ def respond(user_input: str) -> str:
         {"role": "user", "content": user_input}
     ]
     response = llm.generate_response(messages)
+
+    # Check if Alex's response suggests logging a ticket — auto-enable ticket offer flag
+    _ticket_keywords = ["log a ticket", "raise a ticket", "create a ticket",
+                        "file a ticket", "escalate", "our team can follow up",
+                        "support team", "would you like me to log"]
+    ticket_offered = any(kw in response.lower() for kw in _ticket_keywords)
 
     # Update context memory
     context_manager.add("user", user_input)
