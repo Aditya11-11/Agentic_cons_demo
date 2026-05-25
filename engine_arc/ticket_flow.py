@@ -45,12 +45,20 @@ class TicketFlowManager:
     def next(self, user_input: str) -> tuple[str, bool]:
         """
         Returns (next_message, is_complete).
-        Feed user_input for current question, advance to next.
+        Supports conversational fillers and basic corrections.
         """
-        q = TICKET_QUESTIONS[self.current_step]
         raw = user_input.strip()
+        q = TICKET_QUESTIONS[self.current_step]
 
-        # Conditional extraction logic
+        # 1. Check for corrections of PREVIOUS fields
+        if self.current_step > 0:
+            previous_q = TICKET_QUESTIONS[self.current_step - 1]
+            correction = self._check_for_correction(previous_q["field"], raw)
+            if correction:
+                setattr(self.ticket, previous_q["field"], correction)
+                return f"Oh, I've got it! I've updated your {previous_q['field'].replace('user_', '')} to '{correction}'.\n\nReturning to where we were... {q['question']}", False
+
+        # 2. Extract current field
         if q["field"] in ["user_name", "user_email"]:
             extracted = self._extract_field(q["field"], raw)
         elif q["field"] == "priority":
@@ -58,14 +66,18 @@ class TicketFlowManager:
         else:
             extracted = raw
 
+        # 3. Handle conversational fillers (e.g., "sure", "yes") without actual data
+        if extracted in ["MISSING", "AFFIRMATIVE_ONLY"]:
+            return f"No problem at all! Just let me know your {q['field'].replace('user_', '')} when you're ready.", False
+
         setattr(self.ticket, q["field"], extracted)
 
+        # 4. Advance
         self.current_step += 1
         if self.current_step >= len(TICKET_QUESTIONS):
             return self._finalize(), True
 
         next_q = TICKET_QUESTIONS[self.current_step]
-        # Natural acknowledgement
         acks = {
             "user_name": f"Nice to meet you, {extracted}!",
             "user_email": "Perfect, I've got your email.",
@@ -75,14 +87,23 @@ class TicketFlowManager:
         return f"{ack}\n\n{next_q['question']}", False
 
     def _extract_field(self, field: str, raw: str) -> str:
-        """Use LLM to clean/normalize specific short fields like name or email."""
+        """Use LLM to clean/normalize specific short fields, detecting placeholders."""
         prompt = (
-            f"The user was asked for their '{field}'. They responded with: '{raw}'.\n"
-            f"If the response contains a {field}, return ONLY that clean value.\n"
-            f"If it's just nonsense or metadata, try to extract the core {field}.\n"
-            f"Return ONLY the value. No preamble."
+            f"The user was asked for their {field}. They responded with: '{raw}'.\n"
+            f"Rules:\n"
+            f"1. If they provided the {field}, return ONLY the clean value (e.g., 'Aditya' or 'test@example.com').\n"
+            f"2. If they only said something like 'sure', 'yes', 'ok', or 'go ahead' without providing the string, return 'AFFIRMATIVE_ONLY'.\n"
+            f"3. If the response is nonsense or empty relative to the {field}, return 'MISSING'.\n"
+            f"Return ONLY one of the results above. No preamble."
         )
         return self.llm.generate(prompt, max_new_tokens=40).strip()
+
+    def _check_for_correction(self, field: str, raw: str) -> str:
+        """Heuristic or LLM-based check if user is trying to correct the previous field."""
+        if "name" in raw.lower() and field == "user_name" and ("actually" in raw.lower() or "my name is" in raw.lower() or "bad" in raw.lower()):
+            return self._extract_field(field, raw)
+        # Add email correction logic if needed
+        return None
 
     def _normalize_priority(self, raw: str) -> str:
         """Map user input to a valid priority level."""
