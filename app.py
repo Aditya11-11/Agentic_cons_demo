@@ -108,9 +108,13 @@ def respond(user_input: str) -> str:
 
 
 def clean_for_tts(text: str) -> str:
-    """Clean response text for TTS output."""
+    """Clean response text for TTS output: remove <think> tags and all markdown symbols."""
+    # Remove thought process
     clean = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
-    clean = clean.encode('ascii', 'ignore').decode('ascii').strip()
+    # Remove markdown chars: **, _, #, `, etc.
+    clean = re.sub(r'[*_#`~>\[\]\(\)]', '', clean)
+    # Normalize whitespace
+    clean = re.sub(r'\s+', ' ', clean).strip()
     return clean
 
 
