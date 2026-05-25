@@ -1,412 +1,374 @@
-================================================================================
-SUPPORT KNOWLEDGE BASE — TechFlow SaaS Platform
-Version 1.0 | Last Updated: May 2025
-================================================================================
-Drop this file into your /knowledgebase/ folder. The RAG engine will parse and
-index it automatically on startup.
-================================================================================
-
-
---------------------------------------------------------------------------------
-SECTION 1: ACCOUNT & LOGIN ISSUES
---------------------------------------------------------------------------------
-
-## Forgotten Password
-If you cannot log in because you forgot your password, go to the login page and
-click "Forgot Password". Enter the email address associated with your account.
-You will receive a password reset email within 2–5 minutes. Check your spam or
-junk folder if it does not arrive. The reset link expires after 30 minutes. If
-it has expired, simply request a new one from the login page.
-
-## Account Locked After Failed Attempts
-Your account is temporarily locked after 5 consecutive failed login attempts.
-The lock lasts 15 minutes automatically. After 15 minutes, you may try again.
-If you believe your account has been compromised, contact support immediately to
-initiate a security review. Do not share your password with anyone.
-
-## Two-Factor Authentication (2FA) Not Working
-If your 2FA code is rejected, first ensure your device's time is synchronized
-correctly — authenticator apps are time-sensitive. Go to your device settings,
-find Date & Time, and enable automatic time synchronization. If the issue
-persists, you can use one of your backup codes provided when you set up 2FA. To
-find backup codes, log in via a trusted device, go to Settings > Security >
-Two-Factor Authentication > View Backup Codes. If you have lost all backup
-codes, contact support with your account email and photo ID for identity
-verification.
-
-## Email Not Recognized at Login
-If the system does not recognize your email, you may have signed up with a
-different email address, or your account may have been deleted. Try any
-alternate email addresses you use. If you signed up through Google or GitHub
-SSO (Single Sign-On), use the "Continue with Google" or "Continue with GitHub"
-button instead of email/password. To check all emails associated with your
-account, email verify@techflow.io from any email you think you used.
-
-## Changing Your Email Address
-To change the email on your account, go to Settings > Profile > Email. You will
-be sent a confirmation link to your new email address. The change takes effect
-only after you click the confirmation link. Your old email address will receive
-a security notification. If you did not initiate this change, contact support
-immediately.
-
-
---------------------------------------------------------------------------------
-SECTION 2: BILLING & SUBSCRIPTION
---------------------------------------------------------------------------------
-
-## How Billing Works
-TechFlow bills monthly or annually depending on your plan. Monthly plans are
-billed on the same date each month (your billing date). Annual plans are billed
-once per year upfront and receive a 20% discount compared to monthly pricing.
-All prices are in USD. Taxes may apply depending on your country of residence.
-
-## Upgrading Your Plan
-To upgrade, go to Settings > Billing > Change Plan. Select your new plan and
-confirm. Upgrades take effect immediately. You will be charged a prorated amount
-for the remainder of your current billing period. For example, if you upgrade
-halfway through a monthly billing cycle, you will only pay for the remaining
-days at the new plan rate.
-
-## Downgrading Your Plan
-Downgrades take effect at the end of your current billing period — you will
-retain full access to your current plan until then. Go to Settings > Billing >
-Change Plan and select the lower tier. You will see the date the downgrade
-takes effect. No refunds are issued for unused time on a higher plan.
-
-## Cancelling a Subscription
-To cancel, go to Settings > Billing > Cancel Subscription. Follow the prompts.
-Your access continues until the end of the current billing period. After
-cancellation, your data is retained for 90 days in case you wish to reactivate.
-After 90 days, all data is permanently deleted. To reactivate within 90 days,
-go to the login page and select "Reactivate Account".
-
-## Refund Policy
-We offer a 14-day money-back guarantee for new subscriptions. If you are not
-satisfied within the first 14 days of a new subscription, contact support at
-billing@techflow.io with your account email and reason. Refunds are processed
-within 5–7 business days back to your original payment method. Refunds are not
-available after the 14-day window, for plan renewals, or for add-ons.
-
-## Payment Failed / Card Declined
-If your payment fails, you will receive an email notification. You have a 7-day
-grace period to update your payment method before your account is suspended. To
-update your card, go to Settings > Billing > Payment Methods > Add New Card.
-Common reasons for payment failure include: expired card, insufficient funds,
-bank fraud prevention block, or incorrect billing address. If you updated your
-card and the charge still fails, contact your bank to confirm there is no block
-on international or subscription transactions.
-
-## Invoice and Receipt Download
-All invoices are available under Settings > Billing > Invoice History. Click
-any invoice to download a PDF receipt. If you need an invoice reissued with
-specific company details (for expense reporting), email billing@techflow.io
-with your account email and the required details.
-
-
---------------------------------------------------------------------------------
-SECTION 3: TECHNICAL ISSUES
---------------------------------------------------------------------------------
-
-## App Not Loading / Blank Screen
-If the app shows a blank screen or fails to load:
-1. Hard-refresh the page (Ctrl+Shift+R on Windows, Cmd+Shift+R on Mac).
-2. Clear your browser cache and cookies.
-3. Try an incognito/private window.
-4. Disable browser extensions one at a time to identify any conflict.
-5. Try a different browser (Chrome, Firefox, Edge).
-If the issue persists across browsers, check our status page at
-status.techflow.io to see if there is an ongoing incident.
-
-## Slow Performance / High Load Time
-Slow performance can be caused by: a large number of records in your workspace,
-browser memory overload, or a network issue. Try closing other browser tabs,
-restarting your browser, or checking your internet speed at fast.com. If the
-platform is consistently slow only for your account, contact support — it may
-indicate a data indexing issue specific to your workspace.
-
-## File Upload Failing
-Supported file formats: PDF, DOCX, XLSX, CSV, TXT, PNG, JPG, MP4 (for media).
-Maximum file size: 50 MB per file, 500 MB per workspace per month on the
-Starter plan, unlimited on Pro and Enterprise. If your upload is failing:
-1. Check the file format and size.
-2. Ensure you have a stable internet connection.
-3. Try a different browser.
-4. If the file is exactly the right format but still fails, it may be corrupted.
-   Try re-exporting or re-saving it.
-
-## Integration Not Syncing (Slack, Jira, GitHub)
-If a third-party integration stops syncing:
-1. Go to Settings > Integrations and click the affected integration.
-2. Click "Re-authorize" to refresh the connection token.
-3. Check that the connected account still has the correct permissions in the
-   third-party app (e.g., the connected Slack workspace admin may have revoked
-   bot permissions).
-4. Disconnect and reconnect the integration.
-If syncing still fails after reconnecting, check the integration logs under
-Settings > Integrations > [Name] > Activity Log for error codes and share them
-with support.
-
-## API Errors (for Developers)
-Common API error codes:
-- 401 Unauthorized: Your API key is missing, invalid, or expired. Regenerate
-  your key at Settings > Developer > API Keys.
-- 403 Forbidden: Your API key does not have permission for the resource. Check
-  the scope assigned to your key.
-- 429 Too Many Requests: You have hit the rate limit. Starter: 100 req/min,
-  Pro: 1000 req/min, Enterprise: unlimited. Implement exponential backoff.
-- 500 Internal Server Error: A server-side issue. Check status.techflow.io and
-  retry after a few minutes.
-
-## Data Not Saving / Changes Lost
-If changes are not saving, check:
-1. Your network connection — offline mode is not supported.
-2. Whether you see an error toast notification (yellow/red banner) — this
-   usually contains the reason.
-3. Whether your session has expired — the app logs you out after 8 hours of
-   inactivity. Log back in and retry.
-4. If saving consistently fails on a specific record, that record may be
-   corrupted. Export it, delete it, and reimport.
-
-
---------------------------------------------------------------------------------
-SECTION 4: FEATURES & HOW-TO GUIDES
---------------------------------------------------------------------------------
-
-## How to Create a Project
-1. From the Dashboard, click "+ New Project" in the top right.
-2. Enter a project name (required) and description (optional).
-3. Choose a template (Blank, Agile Board, CRM, or Support Desk) or start blank.
-4. Set visibility: Private (only invited members) or Team (all workspace members).
-5. Click "Create Project". You will be taken to the project board automatically.
-
-## How to Invite Team Members
-Go to Settings > Workspace > Members > Invite Members. Enter their email
-address and select a role:
-- Viewer: Read-only access to all projects.
-- Editor: Can create and edit items, cannot delete projects.
-- Admin: Full access including billing and member management.
-Invitees receive an email invitation valid for 48 hours. Uninvited members can
-be re-invited from the same screen. You can also share a workspace invite link
-from Settings > Workspace > Members > Copy Invite Link.
-
-## How to Export Data
-Go to Settings > Data > Export. Choose the format (CSV or JSON) and the
-scope (entire workspace, a specific project, or a date range). Large exports are
-processed in the background — you will receive an email with a download link
-when ready. Export links expire after 7 days.
-
-## How to Set Up Automations
-Automations trigger actions when conditions are met (e.g., "When status changes
-to Done, notify Slack"). To create one:
-1. Open a Project > click "Automations" in the sidebar.
-2. Click "+ New Automation".
-3. Set the Trigger (e.g., Status Changed, Item Created, Due Date Reached).
-4. Add one or more Actions (Send Notification, Assign Member, Move Item, etc.).
-5. Toggle the automation on and click Save.
-Automations run within ~30 seconds of the trigger event. The Starter plan
-allows up to 10 active automations per workspace. Pro and Enterprise are
-unlimited.
-
-## How to Use the Search Function
-The global search bar (top of every page, or press Ctrl+K / Cmd+K) searches
-across all projects, items, comments, and attachments in your workspace. Use
-quotation marks for exact phrase search: "Q3 report". Use the filter icon next
-to the search bar to limit results by project, type, date, or assignee.
-
-## Setting Up Notifications
-Go to Settings > Notifications. You can configure:
-- Email notifications: Daily digest, instant, or off.
-- In-app notifications: What events trigger a bell notification.
-- Slack/Teams: Get notified in a channel (requires integration).
-You can also set per-project notification preferences from inside each project
-under Project Settings > Notifications.
-
-
---------------------------------------------------------------------------------
-SECTION 5: ENTERPRISE & SECURITY
---------------------------------------------------------------------------------
-
-## Single Sign-On (SSO) Setup
-SSO is available on the Enterprise plan. Supported providers: Okta, Azure AD,
-Google Workspace, and custom SAML 2.0 providers. To configure:
-1. Go to Settings > Security > Single Sign-On.
-2. Download the Service Provider metadata XML.
-3. Upload it to your Identity Provider (IdP) to create the SAML app.
-4. Copy the IdP SSO URL and certificate back into TechFlow's SSO settings.
-5. Test with a pilot user before enforcing SSO for all members.
-Contact enterprise@techflow.io if you need assistance with setup.
-
-## Data Residency
-Enterprise customers can choose their data residency region:
-- US (default): US-East (Virginia)
-- EU: eu-west-1 (Ireland)
-- APAC: ap-southeast-1 (Singapore)
-Data residency must be configured before workspace creation — it cannot be
-changed after the fact. Contact enterprise@techflow.io to request a region-
-specific workspace.
-
-## GDPR and Data Deletion Requests
-For GDPR data subject access requests (DSAR) or deletion requests, email
-privacy@techflow.io with the subject line "DSAR Request" or "Data Deletion
-Request". Include the user's email address and workspace name. We respond
-within 30 days in compliance with GDPR Article 15/17. For bulk deletion (e.g.,
-removing a former employee's data), Workspace Admins can delete individual user
-data from Settings > Members > [Member] > Delete Data.
-
-## Audit Logs
-Audit logs are available on the Pro and Enterprise plans. Go to Settings >
-Security > Audit Logs. Logs track: logins, permission changes, data exports,
-API key creation, and member invitations. Logs are retained for 90 days on Pro
-and 365 days on Enterprise. Logs can be exported as CSV or streamed to a SIEM
-via webhook (Enterprise only).
-
-
---------------------------------------------------------------------------------
-SECTION 6: SUPPORT TICKET EXAMPLES (for RAG testing)
---------------------------------------------------------------------------------
-
-## Example Ticket 1
-Issue: Cannot log in, forgot password, reset email not received.
-Resolution: Advised user to check spam folder. Reset email was in spam. User
-accessed account successfully. Root cause: Gmail spam filter flagged the
-no-reply@techflow.io domain. Advised user to whitelist the domain.
-
-## Example Ticket 2
-Issue: Payment failed, card declined.
-Resolution: User's bank had flagged the recurring subscription as suspicious.
-Advised user to call their bank and authorize the transaction. User confirmed
-with bank, payment processed on second attempt. Account restored.
-
-## Example Ticket 3
-Issue: File upload failing for large PDF (45 MB).
-Resolution: User was on Starter plan with 50 MB file limit. File was 45 MB
-but also had embedded video content that was not supported. Advised user to
-remove embedded video and re-export. Upload succeeded at 12 MB.
-
-## Example Ticket 4
-Issue: 2FA codes not working.
-Resolution: User's device clock was 4 minutes out of sync. Advised enabling
-automatic time sync. After sync, 2FA codes accepted immediately.
-
-## Example Ticket 5
-Issue: Slack integration stopped sending notifications.
-Resolution: The Slack bot token had expired after a Slack workspace admin
-rotation. User re-authorized the integration under Settings > Integrations >
-Slack. Notifications resumed within 2 minutes.
-
-## Example Ticket 6
-Issue: API returning 429 errors despite low usage.
-Resolution: User was on Starter plan (100 req/min) but had implemented a
-polling loop calling the API every 500ms, exceeding the rate limit. Advised
-implementing webhook-based updates instead of polling and adding exponential
-backoff. User updated implementation and errors resolved.
-
-## Example Ticket 7
-Issue: Team member invitation not received.
-Resolution: Invite email was blocked by the recipient's corporate email filter.
-Advised sharing the workspace invite link directly (Settings > Workspace >
-Members > Copy Invite Link) as an alternative. Member joined successfully.
-
-## Example Ticket 8
-Issue: User wants to cancel but retain data.
-Resolution: Explained that data is retained for 90 days after cancellation.
-User confirmed cancellation. Sent a data export link before cancellation to
-ensure user had a copy of all project data.
-
-## Example Ticket 9
-Issue: User upgraded from Starter to Pro but workspace still shows Starter limits.
-Resolution: Plan change was confirmed in billing but a cache issue prevented the
-UI from refreshing. Advised user to log out and log back in. After re-login, the
-Pro plan features and limits appeared correctly. No billing discrepancy found.
-
-## Example Ticket 10
-Issue: Data export requested but download link expired before user could access it.
-Resolution: The export link was valid for 7 days but the user did not check email
-in time. Re-triggered the export from Settings > Data > Export. New link sent to
-user's verified email. Advised user to download within 7 days. Export completed.
-
-## Example Ticket 11
-Issue: User cannot find audit logs, receives "Feature not available" message.
-Resolution: User was on the Starter plan which does not include audit logs.
-Explained that audit logs are available on Pro and Enterprise plans only.
-Provided upgrade instructions via Settings > Billing > Change Plan. User chose
-to upgrade to Pro. Audit logs became accessible immediately after upgrade.
-
-## Example Ticket 12
-Issue: Automation rule not firing — "When status changes to Done, notify Slack".
-Resolution: The user had reached the 10-automation limit on the Starter plan.
-The automation was saved but remained in a disabled state. Advised the user to
-either delete an unused automation or upgrade to Pro for unlimited automations.
-User deleted two old automations and re-enabled the Slack notification rule.
-Automation fired correctly on next status change.
-
-## Example Ticket 13
-Issue: GitHub integration showing "Permission Denied" after organization transfer.
-Resolution: The GitHub repository was transferred to a new organization, which
-invalidated the existing integration token. Advised user to disconnect the GitHub
-integration under Settings > Integrations > GitHub > Disconnect, then reconnect
-with the new organization's permissions. User completed the steps and syncing
-resumed within 5 minutes.
-
-## Example Ticket 14
-Issue: User's workspace data appears to be missing after browser update.
-Resolution: The browser update cleared all cached data including local session
-tokens. User was not actually logged in — the dashboard was loading a cached
-shell. Advised user to log back in with credentials. All workspace data was
-intact on the server. Confirmed no data loss occurred.
-
-## Example Ticket 15
-Issue: SSO login failing with "SAML Response Invalid" error.
-Resolution: The customer's Azure AD certificate had expired during their annual
-rotation. Advised the IT admin to re-export the certificate from Azure AD and
-re-upload it under Settings > Security > Single Sign-On. After certificate update,
-SSO login resumed for all workspace members within 10 minutes.
-
-## Example Ticket 16
-Issue: User receiving duplicate email notifications for every project update.
-Resolution: User had both "Instant" email notifications and "Daily Digest"
-enabled simultaneously, plus per-project overrides that also sent instant emails.
-Advised disabling the global instant notifications at Settings > Notifications
-and keeping only the daily digest. Duplicates stopped immediately.
-
-## Example Ticket 17
-Issue: CSV export contains garbled characters for non-English project names.
-Resolution: The user was opening the CSV file in Excel which defaults to ANSI
-encoding. TechFlow exports in UTF-8. Advised user to open Excel, use Data >
-From Text/CSV, and select UTF-8 encoding during import. Characters displayed
-correctly after re-import.
-
-## Example Ticket 18
-Issue: User accidentally deleted a project and wants to recover it.
-Resolution: Deleted projects are moved to Trash and retained for 30 days before
-permanent deletion. Guided user to Settings > Workspace > Trash. User found the
-project and clicked "Restore". Project and all associated data were restored to
-the workspace within seconds.
-
-
---------------------------------------------------------------------------------
-SECTION 7: CONTACT & ESCALATION PATHS
---------------------------------------------------------------------------------
-
-General Support:        support@techflow.io          Response: < 24 hours
-Billing Support:        billing@techflow.io           Response: < 4 hours
-Enterprise Support:     enterprise@techflow.io        Response: < 2 hours (SLA)
-Privacy / GDPR:         privacy@techflow.io           Response: < 30 days
-Security Incidents:     security@techflow.io          Response: < 1 hour
-Status Page:            status.techflow.io
-Documentation:          docs.techflow.io
-Community Forum:        community.techflow.io
-
-Support hours:
-- General: Monday–Friday, 9 AM–6 PM EST
-- Enterprise: 24/7 with dedicated CSM (Customer Success Manager)
-
-Priority escalation triggers:
-- Data loss or corruption → CRITICAL, security@techflow.io immediately
-- Complete service outage → CRITICAL, check status page first
-- Billing dispute > $500 → HIGH, billing@techflow.io + include invoice number
-- Security breach / unauthorized access → CRITICAL, security@techflow.io
-
-================================================================================
-END OF KNOWLEDGE BASE
-================================================================================
+# PayGate Pro Support Knowledge Base (Sample)
+
+Version: 1.0
+Last updated: 2026-05-22
+Purpose: This is a sample support knowledge base for testing a Voice Support Copilot with RAG/document retrieval.
+
+---
+
+## 1. Company and Product Overview
+
+PayGate Pro is a fictional payment gateway platform for SaaS companies. It helps businesses accept payments, manage subscriptions, configure webhooks, and monitor billing events.
+
+PayGate Pro supports two environments:
+- Test environment: Used for development and testing. Test API keys start with `pg_test_`.
+- Production environment: Used for live payments. Production API keys start with `pg_live_`.
+
+Customers should never use production API keys in public frontend code.
+
+---
+
+## 2. Support Channels and SLA
+
+Support is available through:
+- Email support: support@paygatepro.example
+- Dashboard support ticket
+- Priority support for Enterprise customers
+
+Standard SLA:
+- Free plan: response within 72 business hours
+- Starter plan: response within 48 business hours
+- Growth plan: response within 24 business hours
+- Enterprise plan: response within 4 hours
+
+Urgent issues include payment outage, duplicate charges, security incidents, and production webhook failures affecting more than 100 transactions.
+
+---
+
+## 3. Refund Policy
+
+PayGate Pro offers refunds under the following conditions:
+
+1. Monthly subscription refund:
+   Customers can request a refund within 14 calendar days of the initial monthly subscription payment.
+
+2. Annual subscription refund:
+   Customers can request a refund within 30 calendar days of the initial annual subscription payment.
+
+3. Duplicate charge refund:
+   If a customer was charged twice for the same invoice or subscription cycle, PayGate Pro will refund the duplicate charge after verification.
+
+4. Non-refundable cases:
+   - Usage-based overage charges are not refundable once consumed.
+   - Refunds are not available for accounts terminated for policy violations.
+   - Refunds are not available after the allowed refund window.
+
+Refund processing time:
+- Approved refunds are usually processed within 5 to 10 business days.
+- Some banks may take additional time to reflect the refund.
+
+Required information for refund requests:
+- Account email
+- Invoice ID
+- Payment date
+- Last four digits of the card
+- Reason for refund
+
+---
+
+## 4. Duplicate Charge Handling
+
+If a customer reports being charged twice, the support assistant should collect:
+
+- Customer account email
+- Invoice ID or transaction ID
+- Date of charge
+- Charged amount
+- Last four digits of the payment card
+- Screenshot or bank statement reference, if available
+
+The ticket should be categorized as:
+- Category: Billing
+- Priority: High
+- Sentiment: Frustrated or Neutral depending on customer tone
+
+The support team should verify whether:
+- Two successful payment records exist for the same invoice
+- One payment is only an authorization hold
+- The second charge belongs to a different subscription or workspace
+
+If it is confirmed as a duplicate charge, the duplicate payment should be refunded.
+
+---
+
+## 5. Failed Payment Troubleshooting
+
+Common reasons for failed payment:
+- Insufficient funds
+- Bank declined the transaction
+- Incorrect card details
+- Expired card
+- 3D Secure authentication failure
+- Billing address mismatch
+- Card not enabled for international payments
+
+Recommended steps:
+1. Ask the customer to verify card details.
+2. Ask the customer to check with their bank.
+3. Ask the customer to try a different card.
+4. Ask the customer to update billing address.
+5. If 3D Secure fails repeatedly, escalate to the billing operations team.
+
+A failed payment does not always mean the customer was charged. Some banks show temporary authorization holds. These usually disappear within 3 to 7 business days.
+
+---
+
+## 6. Subscription Cancellation
+
+Customers can cancel a subscription from:
+Dashboard > Billing > Current Plan > Cancel Subscription
+
+Cancellation rules:
+- Cancellation takes effect at the end of the current billing cycle.
+- The customer can continue using paid features until the billing cycle ends.
+- Deleting a workspace does not automatically cancel the subscription.
+- Enterprise cancellations require a written request from the account owner.
+
+Information to collect before cancellation:
+- Account email
+- Workspace name
+- Reason for cancellation
+- Whether the customer wants immediate access removal or end-of-cycle cancellation
+
+---
+
+## 7. API Key Management
+
+API keys are used to authenticate requests to the PayGate Pro API.
+
+API key best practices:
+- Use test keys for development and production keys only for live payments.
+- Never expose secret API keys in frontend code.
+- Rotate keys every 90 days.
+- Revoke unused keys immediately.
+- Use separate keys for different services or environments.
+
+API key states:
+- Active: Can be used for API requests.
+- Revoked: Cannot be used and should return an authentication error.
+- Expired: Cannot be used after the expiry date.
+
+If a customer suspects an API key leak:
+1. Revoke the suspected key immediately.
+2. Generate a new key.
+3. Update backend services with the new key.
+4. Review recent API usage logs.
+5. Contact security support if suspicious activity is detected.
+
+---
+
+## 8. Webhook Configuration
+
+Webhooks allow customers to receive event notifications from PayGate Pro.
+
+Supported webhook events:
+- payment.success
+- payment.failed
+- payment.refunded
+- subscription.created
+- subscription.cancelled
+- invoice.created
+- invoice.paid
+- api_key.revoked
+- security.alert
+
+Webhook endpoint requirements:
+- Must use HTTPS in production.
+- Must respond with a 2xx status code to mark delivery as successful.
+- Should respond within 10 seconds.
+- Should verify the webhook signature.
+- Should be idempotent because the same webhook may be delivered more than once.
+
+Webhook signing:
+- Every webhook request includes `X-PayGate-Signature`.
+- Every webhook request includes `X-PayGate-Timestamp`.
+- The receiver should reject requests where the timestamp is older than 5 minutes.
+- The signature is generated using HMAC-SHA256 over the timestamp and request body.
+
+Webhook retry policy:
+- If the endpoint does not return a 2xx response, PayGate Pro retries delivery.
+- Retry attempts happen after approximately 30 seconds, 2 minutes, 5 minutes, 15 minutes, and 30 minutes.
+- After 5 failed attempts, the delivery is marked as failed.
+- Failed deliveries can be manually replayed from the dashboard.
+
+---
+
+## 9. Webhook Delivery Logs
+
+The webhook delivery log shows:
+- Event type
+- Webhook URL
+- Delivery status
+- HTTP response code
+- Attempt count
+- Response time
+- Last error message
+- Timestamp of last attempt
+
+Delivery statuses:
+- Pending: Delivery has not started.
+- Success: Endpoint returned a 2xx response.
+- Retrying: Delivery failed and will be retried.
+- Failed: Delivery failed after all retry attempts.
+- Cancelled: Delivery was cancelled by an admin or system rule.
+
+If a customer says they did not receive a webhook:
+1. Check whether the webhook URL is active.
+2. Check the delivery logs.
+3. Verify the endpoint returned a 2xx response.
+4. Confirm the endpoint was reachable.
+5. Ask the customer to check their server logs.
+6. If needed, manually replay the delivery.
+
+---
+
+## 10. Account Access and Password Reset
+
+If a customer cannot log in:
+- Ask them to verify the email address.
+- Ask them to use the password reset option.
+- Ask them to check spam/junk folder for the reset email.
+- Confirm whether SSO is enabled for their workspace.
+
+Password reset link:
+- Expires after 30 minutes.
+- Can be requested again after 60 seconds.
+- Should not be shared with anyone.
+
+If the account owner is locked out, escalate to Account Recovery.
+
+---
+
+## 11. Priority and Sentiment Classification Guide
+
+Suggested priority:
+- Urgent: Production outage, security incident, duplicate charge affecting multiple customers, webhook outage affecting more than 100 transactions.
+- High: Duplicate charge, failed production payments, account owner locked out, production webhook failures.
+- Medium: Refund request, single failed payment, API key rotation help, subscription cancellation.
+- Low: General product question, documentation request, test environment issue.
+
+Suggested category:
+- Billing: Refunds, duplicate charges, invoices, subscription cancellation, failed payments.
+- Technical: API errors, webhooks, authentication, integration setup.
+- Account: Login, password reset, account owner changes, workspace access.
+- Security: API key leak, suspicious activity, unauthorized access.
+- General: Product FAQs and non-urgent questions.
+
+Suggested sentiment:
+- Angry: Customer uses strong negative language or threatens escalation.
+- Frustrated: Customer is upset but cooperative.
+- Neutral: Customer asks for help without strong emotion.
+- Positive: Customer is satisfied or appreciative.
+
+---
+
+## 12. Escalation Rules
+
+Escalate to Billing Operations when:
+- Duplicate charge is confirmed or likely
+- Refund amount is above $500
+- Annual subscription refund is requested
+- Payment dispute or chargeback is mentioned
+
+Escalate to Security when:
+- API key leak is suspected
+- Unauthorized access is reported
+- Suspicious usage spike appears
+- Customer mentions compromised account
+
+Escalate to Engineering when:
+- Production webhook delivery is failing for many customers
+- API latency is above 2 seconds for more than 15 minutes
+- Multiple customers report payment processing errors
+- A customer provides reproducible API failure logs
+
+Escalate to Account Recovery when:
+- Account owner is locked out
+- Customer lost access to SSO provider
+- Workspace ownership transfer is requested
+
+---
+
+## 13. Sample Support Ticket Formats
+
+### Duplicate Charge Ticket
+
+Category: Billing
+Priority: High
+Suggested Team: Billing Operations
+Summary: Customer reports being charged twice for the same subscription or invoice.
+Required Details:
+- Account email
+- Invoice ID
+- Transaction ID
+- Charge date
+- Charged amount
+- Last four card digits
+
+### Webhook Failure Ticket
+
+Category: Technical
+Priority: High or Medium depending on impact
+Suggested Team: Engineering
+Summary: Customer reports webhook events are not being received.
+Required Details:
+- Webhook URL
+- Event type
+- Delivery ID
+- HTTP response code
+- Last error message
+- Time of failure
+
+### API Key Leak Ticket
+
+Category: Security
+Priority: Urgent
+Suggested Team: Security
+Summary: Customer suspects their API key has been exposed.
+Required Details:
+- Workspace name
+- Key ID if available
+- Time issue was discovered
+- Suspicious activity observed
+- Whether key was already revoked
+
+---
+
+## 14. Answers the Assistant Should NOT Invent
+
+The assistant should not invent:
+- Real refund approval status
+- Actual payment confirmation
+- Customer account ownership
+- Internal employee names
+- Personal phone numbers
+- Bank-specific refund timelines beyond general estimates
+- Production incident status not present in the knowledge base
+
+If the answer is not available in the knowledge base, the assistant should say:
+"I do not have enough information in the uploaded support documents to answer that accurately."
+
+---
+
+## 15. Sample Customer Issues
+
+1. "I was charged twice for my subscription yesterday."
+Expected behavior: classify as Billing, High priority, ask for invoice ID, charge date, amount, and last four card digits.
+
+2. "My webhook endpoint is not receiving payment.success events."
+Expected behavior: classify as Technical, ask for webhook URL, event type, delivery ID, and error logs.
+
+3. "I think my API key was leaked."
+Expected behavior: classify as Security, Urgent priority, recommend revoking the key and generating a new one.
+
+4. "How long does a monthly subscription refund window last?"
+Expected behavior: answer 14 calendar days.
+
+5. "How many webhook retry attempts happen after failure?"
+Expected behavior: answer 5 attempts after approximately 30 seconds, 2 minutes, 5 minutes, 15 minutes, and 30 minutes.
+
+6. "Can I cancel my subscription immediately?"
+Expected behavior: explain cancellation usually takes effect at end of billing cycle; collect account email and workspace name.
+
+7. "What is the CEO's personal phone number?"
+Expected behavior: say there is not enough information in the uploaded support documents.

@@ -74,7 +74,7 @@ def respond(user_input: str) -> str:
         ticket_offered = False
         if not context_manager.history:
             return (
-                "Hi there! Thanks for calling TechFlow Support. 😊 "
+                "Hi there! Thanks for calling PayGate Pro Support. 😊 "
                 "My name is Alex, and I'm here to help you today. "
                 "What can I assist you with?"
             )
