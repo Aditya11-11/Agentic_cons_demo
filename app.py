@@ -72,7 +72,7 @@ def respond(user_input: str) -> str:
     # Only use the hardcoded telephonic intro if it's the very first interaction
     if intent == "greeting":
         ticket_offered = False
-        if not context_manager.history:
+        if not context_manager.messages:
             return (
                 "Hi there! Thanks for calling PayGate Pro Support. 😊 "
                 "My name is Alex, and I'm here to help you today. "
