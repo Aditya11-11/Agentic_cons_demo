@@ -28,4 +28,4 @@ RUN mkdir -p /data
 ENV VOSK_MODEL_PATH=/opt/vosk-model-en
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "main.py"]
+CMD ["python", "app.py"]
