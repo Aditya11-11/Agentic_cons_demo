@@ -72,12 +72,16 @@ class TicketFlowManager:
         Feed user_input for current question, advance to next.
         """
         q = TICKET_QUESTIONS[self.current_step]
-        # Store the raw user input directly — don't mangle it with LLM extraction
         raw = user_input.strip()
-        if q["field"] == "priority":
+
+        # Conditional extraction logic
+        if q["field"] in ["user_name", "user_email"]:
+            extracted = self._extract_field(q["field"], raw)
+        elif q["field"] == "priority":
             extracted = self._normalize_priority(raw)
         else:
             extracted = raw
+
         setattr(self.ticket, q["field"], extracted)
 
         self.current_step += 1
@@ -85,7 +89,7 @@ class TicketFlowManager:
             return self._finalize(), True
 
         next_q = TICKET_QUESTIONS[self.current_step]
-        # Natural acknowledgement without echoing the full input back
+        # Natural acknowledgement
         acks = {
             "user_name": f"Nice to meet you, {extracted}!",
             "user_email": "Perfect, I've got your email.",
@@ -97,6 +101,16 @@ class TicketFlowManager:
         }
         ack = acks.get(q["field"], "Got it.")
         return f"{ack}\n\n{next_q['question']}", False
+
+    def _extract_field(self, field: str, raw: str) -> str:
+        """Use LLM to clean/normalize specific short fields like name or email."""
+        prompt = (
+            f"The user was asked for their '{field}'. They responded with: '{raw}'.\n"
+            f"If the response contains a {field}, return ONLY that clean value.\n"
+            f"If it's just nonsense or metadata, try to extract the core {field}.\n"
+            f"Return ONLY the value. No preamble."
+        )
+        return self.llm.generate(prompt, max_new_tokens=40).strip()
 
     def _normalize_priority(self, raw: str) -> str:
         """Map user input to a valid priority level."""
