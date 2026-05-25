@@ -6,42 +6,18 @@ TICKET_QUESTIONS = [
     {
         "field": "user_name",
         "question": "Sure, I'd love to help! To get started, could you share your name with me?",
-        "follow_up": None,
     },
     {
         "field": "user_email",
         "question": "Thanks! And what's the best email address we can use to follow up with you?",
-        "follow_up": None,
-    },
-    {
-        "field": "subject",
-        "question": "Got it! In just a few words, what's the issue you're running into?",
-        "follow_up": None,
     },
     {
         "field": "description",
-        "question": "I see. Can you tell me a little more about what's happening? Any details you can share would be really helpful.",
-        "follow_up": "Is there anything else about the issue you'd like me to note?",
-    },
-    {
-        "field": "steps_to_reproduce",
-        "question": "Understood. Walk me through what you were doing just before this happened — what steps did you take?",
-        "follow_up": None,
-    },
-    {
-        "field": "expected_behavior",
-        "question": "And what were you hoping or expecting would happen at that point?",
-        "follow_up": None,
-    },
-    {
-        "field": "actual_behavior",
-        "question": "I see — so what actually happened instead? What did you see on your screen?",
-        "follow_up": None,
+        "question": "Got it. Can you tell me exactly what's happening? Feel free to describe any steps you took and what you expected to see.",
     },
     {
         "field": "priority",
         "question": "Almost done! On a scale of low, medium, high, or critical — how urgent would you say this is for you?",
-        "follow_up": None,
     },
 ]
 
@@ -93,11 +69,7 @@ class TicketFlowManager:
         acks = {
             "user_name": f"Nice to meet you, {extracted}!",
             "user_email": "Perfect, I've got your email.",
-            "subject": "Got it.",
-            "description": "Thanks for explaining that.",
-            "steps_to_reproduce": "That's helpful, thank you.",
-            "expected_behavior": "Makes sense.",
-            "actual_behavior": "I understand, that sounds frustrating.",
+            "description": "Thanks for explaining that clearly.",
         }
         ack = acks.get(q["field"], "Got it.")
         return f"{ack}\n\n{next_q['question']}", False
