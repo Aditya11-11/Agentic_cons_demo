@@ -5,42 +5,42 @@ from engine_arc.ticket_engine import SupportTicket
 TICKET_QUESTIONS = [
     {
         "field": "user_name",
-        "question": "Let's get started! Could I get your name please?",
+        "question": "Sure, I'd love to help! To get started, could you share your name with me?",
         "follow_up": None,
     },
     {
         "field": "user_email",
-        "question": "And what's the best email address to reach you at?",
+        "question": "Thanks! And what's the best email address we can use to follow up with you?",
         "follow_up": None,
     },
     {
         "field": "subject",
-        "question": "Great! In one short sentence — what's the main issue you're experiencing?",
+        "question": "Got it! In just a few words, what's the issue you're running into?",
         "follow_up": None,
     },
     {
         "field": "description",
-        "question": "Can you describe the problem in a bit more detail? What exactly is happening?",
-        "follow_up": "Is there anything else about the issue you'd like to add?",
+        "question": "I see. Can you tell me a little more about what's happening? Any details you can share would be really helpful.",
+        "follow_up": "Is there anything else about the issue you'd like me to note?",
     },
     {
         "field": "steps_to_reproduce",
-        "question": "What steps did you take right before the problem occurred?",
+        "question": "Understood. Walk me through what you were doing just before this happened — what steps did you take?",
         "follow_up": None,
     },
     {
         "field": "expected_behavior",
-        "question": "What did you expect to happen?",
+        "question": "And what were you hoping or expecting would happen at that point?",
         "follow_up": None,
     },
     {
         "field": "actual_behavior",
-        "question": "And what actually happened instead?",
+        "question": "I see — so what actually happened instead? What did you see on your screen?",
         "follow_up": None,
     },
     {
         "field": "priority",
-        "question": "How urgent is this for you? (low / medium / high / critical)",
+        "question": "Almost done! On a scale of low, medium, high, or critical — how urgent would you say this is for you?",
         "follow_up": None,
     },
 ]
@@ -61,8 +61,8 @@ class TicketFlowManager:
         self.ticket.ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.ticket.created_at = datetime.now().isoformat()
         return (
-            "I'd be happy to help you log a support ticket! "
-            "I'll ask you a few quick questions.\n\n"
+            "Of course! I'm happy to log a support ticket for you. "
+            "I just need a few quick details — it'll only take a minute.\n\n"
             + TICKET_QUESTIONS[0]["question"]
         )
 
@@ -72,8 +72,12 @@ class TicketFlowManager:
         Feed user_input for current question, advance to next.
         """
         q = TICKET_QUESTIONS[self.current_step]
-        # Use LLM to extract clean value from user's natural-language response
-        extracted = self._extract_field(q["field"], user_input)
+        # Store the raw user input directly — don't mangle it with LLM extraction
+        raw = user_input.strip()
+        if q["field"] == "priority":
+            extracted = self._normalize_priority(raw)
+        else:
+            extracted = raw
         setattr(self.ticket, q["field"], extracted)
 
         self.current_step += 1
@@ -81,20 +85,33 @@ class TicketFlowManager:
             return self._finalize(), True
 
         next_q = TICKET_QUESTIONS[self.current_step]
-        confirmation = f"Got it — *{extracted}*.\n\n{next_q['question']}"
-        return confirmation, False
+        # Natural acknowledgement without echoing the full input back
+        acks = {
+            "user_name": f"Nice to meet you, {extracted}!",
+            "user_email": "Perfect, I've got your email.",
+            "subject": "Got it.",
+            "description": "Thanks for explaining that.",
+            "steps_to_reproduce": "That's helpful, thank you.",
+            "expected_behavior": "Makes sense.",
+            "actual_behavior": "I understand, that sounds frustrating.",
+        }
+        ack = acks.get(q["field"], "Got it.")
+        return f"{ack}\n\n{next_q['question']}", False
 
-    def _extract_field(self, field: str, raw: str) -> str:
-        """Use LLM to clean/normalize the user's answer."""
-        prompt = (
-            f"Extract the value for '{field}' from this user response: '{raw}'. "
-            f"Return ONLY the clean value, no extra commentary."
-        )
-        return self.llm.generate(prompt, max_new_tokens=60).strip()
+    def _normalize_priority(self, raw: str) -> str:
+        """Map user input to a valid priority level."""
+        raw_lower = raw.lower()
+        for level in ["critical", "high", "medium", "low"]:
+            if level in raw_lower:
+                return level.upper()
+        return "MEDIUM"
 
     def _finalize(self) -> str:
         self.active = False
+        # Only return a short friendly message — NOT the full ticket markdown
         return (
-            f"Perfect! I've logged your ticket **{self.ticket.ticket_id}**.\n\n"
-            + self.ticket.to_markdown()
+            f"You're all set! 🎉 I've logged your ticket **{self.ticket.ticket_id}** "
+            f"and it's been marked as **{self.ticket.priority}** priority.\n\n"
+            "Our support team will be in touch at the email you provided. "
+            "You can click **'Generate Support Ticket'** below to view the full details anytime."
         )
